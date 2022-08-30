@@ -11,6 +11,7 @@
           <span>这是时间</span>
         </p>
         <p>这是正文</p>
+        <p>文章ID:{{ $route.params.id }}</p>
       </div>
       <div class="col-md-4 pe-2 ps-2">
         <div id="sidebar">

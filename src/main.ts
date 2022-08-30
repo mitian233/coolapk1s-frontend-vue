@@ -9,12 +9,14 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import './assets/stylesheet.css'
+import {createMetaManager} from "vue-meta";
+import axios from "axios";
 
 library.add(faPhone)
 
-const app = createApp(App)
-
-app.use(router)
-app.component('font-awesome-icon', FontAwesomeIcon)
-app.mount('#app')
+createApp(App).use(router)
+    .component('axios',axios)
+    .use(createMetaManager())
+    .component('font-awesome-icon', FontAwesomeIcon)
+    .mount('#app')
 
