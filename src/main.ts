@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import './assets/stylesheet.css'
 import {createMetaManager} from "vue-meta";
 
+
 library.add(faPhone)
 
 createApp(App).use(router)

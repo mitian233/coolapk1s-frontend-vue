@@ -35,12 +35,24 @@
 <script>
 import axios from "axios";
 
-function filterTime(time) {
+function formatDate(time) {
   const date = new Date(time)
-  const Y = date.getFullYear()
-  const M = date.getMonth() + 1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1
-  const D = date.getDate()
-  return `${Y}年${M}月${D}日`
+  const YY = date.getFullYear()
+  const MM = date.getMonth() + 1 < 10 ?'0'+(date.getMonth()+1) : date.getMonth()+1
+  const DD = date.getDate() < 10 ? '0' + (date.getDate()): date.getDate()
+  const hh = date.getHours() < 10 ? '0' + (date.getHours()): date.getHours()
+  const mm = date.getMinutes() < 10 ? '0' + (date.getMinutes()): date.getMinutes()
+  const ss = date.getSeconds() < 10 ? '0' + (date.getSeconds()): date.getSeconds()
+  return `${YY}年${MM}月${DD}日 ${hh}:${mm}:${ss}`
+}
+
+function replaceN(picArr,message){
+  let picNumber = 1
+  for(var i = 0; i<picArr.length; i++){
+    message = message.replace('\n'+ picNumber,'<br/><img class="lazyload" src="'+picArr[i]+'"/><br/>')
+    picNumber++
+  }
+  return message
 }
 
 export default {
@@ -59,10 +71,14 @@ export default {
       var result = res.data
       this.title = result.data.message_title
       this.author = result.data.username
-      this.postTime = filterTime(toString(result.data.lastupdate))
+      this.postTime = formatDate(result.data.lastupdate)
       var message = result.data.message
+      var picArr = result.data.picArr
+      console.log(message)
+      message = replaceN(picArr,message)
       message = message.replace(/[\n\r]/g,'<br/>')
       this.article = message
+      console.log(message)
       console.log(result.data.dyh_name)
     })
   }
