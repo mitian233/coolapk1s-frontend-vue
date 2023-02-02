@@ -1,5 +1,8 @@
 <template>
-  <div class="container">
+  <transition name="fade">
+    <loading-view v-if="loadingDisplay"/>
+  </transition>
+  <div class="container" v-if="!loadingDisplay">
     <div class="row">
       <div class="col-md-8 ps-2 pe-2">
         <div class="container img-fluid">
@@ -17,12 +20,12 @@
           <div class="download-group">
             <div class="sidebar-logo-group">
               <div class="sidebar-logo-item">
-                <img src="../assets/logo.png" alt="">
+                <img :src="userAvatar" alt="">
               </div>
               <p>
-                <span class="title">酷安</span>
+                <span class="title">{{ author }}</span>
                 <br/>
-                <span class="sub-title">发现科技新生活</span>
+                <span class="sub-title">{{ postTime }}</span>
               </p>
             </div>
           </div>
@@ -34,7 +37,7 @@
 
 <script>
 import axios from "axios";
-
+import loadingView from "@/components/loading.vue"
 function formatDate(time) {
   const date = new Date(time)
   const YY = date.getFullYear()
@@ -46,40 +49,48 @@ function formatDate(time) {
   return `${YY}年${MM}月${DD}日 ${hh}:${mm}:${ss}`
 }
 
-function replaceN(picArr,message){
-  let picNumber = 1
-  for(var i = 0; i<picArr.length; i++){
-    message = message.replace('\n'+ picNumber,'<br/><img class="lazyload" src="'+picArr[i]+'"/><br/>')
-    picNumber++
-  }
-  return message
-}
-
 export default {
   name: "ArticleView",
   data(){
     return{
+      loadingDisplay: true,
       title: '正在加载……',
       author: '正在加载……',
       postTime: '正在加载……',
-      article: '正在加载……'
+      article: '正在加载……',
+      userAvatar: '../assets/logo.png'
     }
   },
-  mounted() {
+  components: {
+    loadingView
+  },
+  methods: {
+    replaceN: function (picArr,message){
+      let picNumber = 1
+      for(var i = 0; i<picArr.length; i++){
+        let picAddress = picArr[i].replace('http','https')
+        message = message.replace('<img/>','<br/><img style="width: 100%" class="lazyload" src="'+'https://coolapkapi.mikan.ac.cn/?coolapkpic='+picAddress+'"/><br/>')
+        picNumber++
+      }
+      return message
+    },
+  },
+  created() {
     console.log(this.$route.params.id)
-    axios.get('https://coolapk-api-go.vercel.app/api/feed/detail?id='+this.$route.params.id).then(res=>{
-      var result = res.data
+    axios.get('https://coolapkapi.mikan.ac.cn/feed/id/'+this.$route.params.id,).then(res=>{
+      let result = res.data
       this.title = result.data.message_title
       this.author = result.data.username
       this.postTime = formatDate(result.data.lastupdate)
-      var message = result.data.message
-      var picArr = result.data.picArr
-      console.log(message)
-      message = replaceN(picArr,message)
-      message = message.replace(/[\n\r]/g,'<br/>')
+      let message = result.data.message
+      let picArr = result.data.picArr
+      this.userAvatar = 'https://coolapkapi.mikan.ac.cn/?coolapkpic='+result.data.userAvatar
+      //message = message.replace(/[\n\r]/g,'<br/>')
+      message = message.replace(/\r\n/g,'<br/>')
+      message = message.replace(/\n/g,'<img/>')
+      message = this.replaceN(picArr,message)
+      this.loadingDisplay = false
       this.article = message
-      console.log(message)
-      console.log(result.data.dyh_name)
     })
   }
 }

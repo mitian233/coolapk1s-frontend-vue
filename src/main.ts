@@ -10,6 +10,7 @@ import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import './assets/stylesheet.css'
 import {createMetaManager} from "vue-meta";
+import axios, {Axios} from "axios";
 
 
 library.add(faPhone)
